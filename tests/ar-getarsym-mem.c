@@ -51,7 +51,7 @@
 static void
 build_archive (unsigned char *p)
 {
-  memset (p, 0, ARSZ);
+  memset (p, 0, ARSZ - 4);
   memcpy (p, "!<arch>\n", 8);
 
   struct ar_hdr *hdr = (struct ar_hdr *) (p + 8);
@@ -63,7 +63,11 @@ build_archive (unsigned char *p)
   memcpy (hdr->ar_mode, "100644  ", 8);
   memcpy (hdr->ar_size, "4         ", 10);
   memcpy (hdr->ar_fmag, "`\n", 2);
+}
 
+static void
+build_archive_count (unsigned char *p)
+{
   /* 4-byte count, stored big-endian as on disk; zero entries.  */
   p[68] = 0;
   p[69] = 0;
@@ -75,6 +79,7 @@ int
 main (void)
 {
   int result = 1;
+  int result2 = 1;
 
   long pgsz = sysconf (_SC_PAGESIZE);
   if (pgsz <= 0 || (size_t) pgsz < ARSZ)
@@ -103,6 +108,7 @@ main (void)
 
   unsigned char *buf = map + pgsz - ARSZ;
   build_archive (buf);
+  build_archive_count (buf);
 
   if (elf_version (EV_CURRENT) == EV_NONE)
     {
@@ -137,7 +143,35 @@ main (void)
 
   elf_end (elf);
 
+  /* Again, but without the index member.  Will fail, but shouldn't
+     crash.  */
+  buf = map + pgsz - ARSZ + 4;
+  build_archive (buf);
+
+  elf = elf_memory ((char *) buf, ARSZ - 4);
+  if (elf == NULL)
+    {
+      printf ("FAIL: elf_memory: %s\n", elf_errmsg (-1));
+      goto out;
+    }
+
+  arsym = elf_getarsym (elf, &narsym);
+
+  if (arsym != NULL)
+    {
+      printf ("FAIL: 2 unexpected arsym (narsym=%zu, arsym=%p)\n",
+         narsym, (void *) arsym);
+      result2 = 1;
+    }
+  else
+    {
+      printf ("PASS: 2 read archive header within bounds\n");
+      result2 = 0;
+    }
+
+  elf_end (elf);
+
 out:
   munmap (map, (size_t) pgsz * 2);
-  return result;
+  return result + result2;
 }
