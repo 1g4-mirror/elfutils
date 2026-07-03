@@ -261,8 +261,8 @@ elf_getarsym (Elf *elf, size_t *ptr)
 
 	  /* Now we can build the data structure.  */
 	  Elf_Arsym *arsym = elf->state.ar.ar_sym;
-	  uint64_t (*u64)[n] = file_data;
-	  uint32_t (*u32)[n] = file_data;
+	  uint64_t (*u64)[n+1] = file_data;
+	  uint32_t (*u32)[n+1] = file_data;
 	  for (size_t cnt = 0; cnt < n; ++cnt)
 	    {
 	      arsym[cnt].as_name = str_data;
