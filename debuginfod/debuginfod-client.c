@@ -1565,6 +1565,9 @@ debuginfod_verify_hash(debuginfod_client *c, const unsigned char *hash, int size
   EVP_PKEY_CTX *ctx;
   const EVP_MD *md;
 
+  if (siglen < (int) sizeof(struct signature_v2_hdr))
+    return -EBADMSG;
+
   memcpy(&hdr, sig, sizeof(struct signature_v2_hdr)); /* avoid just aliasing */
 
   if (c->verbose_fd >= 0)
