@@ -68,7 +68,7 @@ check_PROGRAMS = arextract arsymtest newfile saridx scnnames sectiondump \
 		  cu-dwp-section-info declfiles test-manyfuncs \
 		  eu_search_cfi eu_search_macros \
 		  eu_search_lines eu_search_die \
-		  ar-extract-ar elf-from-memory \
+		  ar-extract-ar elf-from-memory ar-getarsym-mem \
 		  $(asm_TESTS)
 
 asm_TESTS = asm-tst1 asm-tst2 asm-tst3 asm-tst4 asm-tst5 \
@@ -239,7 +239,7 @@ TESTS = run-arextract.sh run-arsymtest.sh run-ar.sh newfile test-nlist \
 	run-test-manyfuncs.sh \
 	run-eu-search-cfi.sh run-eu-search-macros.sh \
 	run-eu-search-lines.sh run-eu-search-die.sh \
-	elf-from-memory
+	elf-from-memory ar-getarsym-mem
 
 if !BIARCH
 export ELFUTILS_DISABLE_BIARCH = 1
@@ -786,6 +786,7 @@ libeu = ../lib/libeu.a
 arextract_LDADD = $(libelf)
 arsymtest_LDADD = $(libelf)
 ar_extract_ar_LDADD = $(libelf)
+ar_getarsym_mem_LDADD = $(libelf)
 newfile_LDADD = $(libelf)
 saridx_LDADD = $(libeu) $(libelf)
 scnnames_LDADD = $(libelf)
