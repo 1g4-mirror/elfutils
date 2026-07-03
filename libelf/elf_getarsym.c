@@ -53,9 +53,13 @@ read_number_entries (uint64_t *nump, Elf *elf, size_t *offp, bool index64_p)
 
   size_t w = index64_p ? 8 : 4;
   if (elf->map_address != NULL)
-    /* Use memcpy instead of pointer dereference so as not to assume the
-       field is naturally aligned within the file.  */
-    memcpy (&u, elf->map_address + *offp, w);
+    {
+      if (*offp + w > elf->start_offset + elf->maximum_size)
+	return -1;
+      /* Use memcpy instead of pointer dereference so as not to assume the
+	 field is naturally aligned within the file.  */
+      memcpy (&u, elf->map_address + *offp, w);
+    }
   else if ((size_t) pread_retry (elf->fildes, &u, w, *offp) != w)
     return -1;
 
