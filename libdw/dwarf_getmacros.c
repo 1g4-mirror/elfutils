@@ -171,7 +171,7 @@ get_table_for_offset (Dwarf *dbg, Dwarf_Word macoff,
 {
   const unsigned char *startp = readp;
 
-  /* Request at least 3 bytes for header.  */
+  /* Request at least 3 bytes for header (version 2 bytes, flag 1 byte).  */
   if (readp + 3 > endp)
     {
     invalid_dwarf:
@@ -192,9 +192,10 @@ get_table_for_offset (Dwarf *dbg, Dwarf_Word macoff,
   Dwarf_Off line_offset = (Dwarf_Off) -1;
   if ((flags & 0x2) != 0)
     {
-      line_offset = read_addr_unaligned_inc (is_64bit ? 8 : 4, dbg, readp);
-      if (readp > endp)
+      int offset_bytes = is_64bit ? 8 : 4;
+      if (readp >= endp - offset_bytes)
 	goto invalid_dwarf;
+      line_offset = read_addr_unaligned_inc (offset_bytes, dbg, readp);
     }
   else if (cudie != NULL)
     {
