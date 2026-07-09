@@ -1282,6 +1282,8 @@ str_offsets_base_off (Dwarf *dbg, Dwarf_CU *cu)
   uint64_t unit_length;
   uint16_t version;
 
+  if (unlikely (readendp - readp < 4))
+    goto no_header;
   unit_length = read_4ubyte_unaligned_inc (dbg, readp);
   if (unlikely (unit_length == 0xffffffff))
     {
