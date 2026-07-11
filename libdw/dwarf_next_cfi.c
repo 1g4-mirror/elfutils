@@ -228,6 +228,8 @@ dwarf_next_cfi (const unsigned char e_ident[],
 	      if (sized_augmentation)
 		{
 		  /* Skip FDE address encoding byte.  */
+		  if (bytes >= limit)
+		    goto invalid;
 		  bytes++;
 		  continue;
 		}
