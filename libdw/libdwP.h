@@ -1373,6 +1373,8 @@ __libdw_cu_ranges_base (Dwarf_CU *cu)
 	      const unsigned char *const dataend
 		= (unsigned char *) data->d_buf + data->d_size;
 
+	      if (unlikely (readp > dataend - 4))
+		goto no_header;
 	      uint64_t unit_length = read_4ubyte_unaligned_inc (dbg, readp);
 	      unsigned int offset_size = 4;
 	      if (unlikely (unit_length == 0xffffffff))
