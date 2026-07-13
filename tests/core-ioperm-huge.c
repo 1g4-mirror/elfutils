@@ -27,6 +27,7 @@
 #ifndef NT_386_IOPERM
 # define NT_386_IOPERM 0x201
 #endif
+#include <libelf.h>
 
 #include <fcntl.h>
 #include <stdint.h>
@@ -71,6 +72,10 @@ main (int argc, char **argv)
   const char name[] = "CORE";
   const size_t name_padded = (sizeof (name) + 3) & ~(size_t) 3; /* 8 */
   const size_t filesz = sizeof (Elf64_Nhdr) + name_padded + DESCSZ;
+  Elf_Data data;
+  data.d_version = EV_CURRENT;
+  data.d_off = 0;
+  data.d_align = 1;
 
   Elf64_Ehdr ehdr;
   memset (&ehdr, 0, sizeof ehdr);
@@ -85,6 +90,11 @@ main (int argc, char **argv)
   ehdr.e_ehsize = sizeof (Elf64_Ehdr);
   ehdr.e_phentsize = sizeof (Elf64_Phdr);
   ehdr.e_phnum = 1;
+
+  data.d_buf = &ehdr;
+  data.d_size = sizeof ehdr;
+  data.d_type = ELF_T_EHDR;
+  elf64_xlatetof (&data, &data, ELFDATA2LSB);
   put (fd, &ehdr, sizeof ehdr);
 
   Elf64_Phdr phdr;
@@ -95,6 +105,11 @@ main (int argc, char **argv)
   phdr.p_filesz = filesz;
   phdr.p_memsz = filesz;
   phdr.p_align = 4;
+
+  data.d_buf = &phdr;
+  data.d_size = sizeof phdr;
+  data.d_type = ELF_T_PHDR;
+  elf64_xlatetof (&data, &data, ELFDATA2LSB);
   put (fd, &phdr, sizeof phdr);
 
   Elf64_Nhdr nhdr;
@@ -102,6 +117,11 @@ main (int argc, char **argv)
   nhdr.n_namesz = sizeof (name); /* 5, includes the NUL */
   nhdr.n_descsz = DESCSZ;
   nhdr.n_type = NT_386_IOPERM;
+
+  data.d_buf = &nhdr;
+  data.d_size = sizeof nhdr;
+  data.d_type = ELF_T_NHDR;
+  elf64_xlatetof (&data, &data, ELFDATA2LSB);
   put (fd, &nhdr, sizeof nhdr);
 
   char namebuf[8];
