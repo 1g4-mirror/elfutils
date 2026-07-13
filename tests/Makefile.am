@@ -69,6 +69,7 @@ check_PROGRAMS = arextract arsymtest newfile saridx scnnames sectiondump \
 		  eu_search_cfi eu_search_macros \
 		  eu_search_lines eu_search_die \
 		  ar-extract-ar elf-from-memory ar-getarsym-mem \
+		  core-ioperm-huge \
 		  $(asm_TESTS)
 
 asm_TESTS = asm-tst1 asm-tst2 asm-tst3 asm-tst4 asm-tst5 \
@@ -150,6 +151,7 @@ TESTS = run-arextract.sh run-arsymtest.sh run-ar.sh newfile test-nlist \
 	run-readelf-compressed.sh \
 	run-readelf-const-values.sh \
 	run-readelf-cu-index.sh \
+	run-readelf-core-ioperm-huge.sh \
 	run-varlocs-self.sh run-exprlocs-self.sh \
 	run-readelf-test1.sh run-readelf-test2.sh run-readelf-test3.sh \
 	run-readelf-test4.sh run-readelf-twofiles.sh \
@@ -372,6 +374,7 @@ EXTRA_DIST = run-arextract.sh run-arsymtest.sh run-ar.sh \
 	     run-readelf-compressed-zstd.sh \
 	     run-readelf-const-values.sh testfile-const-values.debug.bz2 \
 	     run-readelf-cu-index.sh \
+	     run-readelf-core-ioperm-huge.sh \
 	     run-addrcfi.sh run-dwarfcfi.sh \
 	     testfile11-debugframe.bz2 testfile12-debugframe.bz2 \
 	     testfileaarch64-debugframe.bz2 testfilearm-debugframe.bz2 \
@@ -787,6 +790,7 @@ arextract_LDADD = $(libelf)
 arsymtest_LDADD = $(libelf)
 ar_extract_ar_LDADD = $(libelf)
 ar_getarsym_mem_LDADD = $(libelf)
+core_ioperm_huge_LDADD =
 newfile_LDADD = $(libelf)
 saridx_LDADD = $(libeu) $(libelf)
 scnnames_LDADD = $(libelf)

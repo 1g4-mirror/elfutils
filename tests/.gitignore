@@ -13,6 +13,7 @@
 /arsymtest
 /ar-extract-ar
 /ar-getarsym-mem
+/core-ioperm-huge
 /asm-tst1
 /asm-tst2
 /asm-tst3

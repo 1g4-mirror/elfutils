@@ -13018,8 +13018,14 @@ handle_core_item (Elf *core, const GElf_Ehdr *ehdr,
     {
       if (*repeated_size > size && (item->format == 'b' || item->format == 'B'))
 	{
-	  data = alloca (*repeated_size);
-	  count *= *repeated_size / size;
+	  /* The descriptor size of a core note comes from an untrusted
+	     ELF file.  Cap the stack allocation so a malformed note that
+	     claims a very large n_descsz cannot exhaust the process
+	     stack and crash readelf.  count and convsize are derived
+	     from the capped size so convert () cannot write past data.  */
+	  size_t alloc_size = MIN (*repeated_size, 64 * 1024);
+	  data = alloca (alloc_size);
+	  count *= alloc_size / size;
 	  convsize = count * size;
 	  *repeated_size -= convsize;
 	}
